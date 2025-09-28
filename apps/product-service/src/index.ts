@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { clerkMiddleware, getAuth } from "@clerk/express";
-import { shouldBeUser } from "../middleware/authMiddleware.js";
+import { shouldBeUser } from "./middleware/authMiddleware.js";
 
 import categoryRouter from "./routes/category.route.js";
 import productRouter from "./routes/product.route.js";
@@ -24,13 +24,6 @@ app.get("/health", (req: Request, res: Response) => {
     status: "ok",
     uptime: process.uptime(),
     timestamp: Date.now(),
-  });
-});
-
-app.get("/test", shouldBeUser, (req: Request, res: Response) => {
-  res.json({
-    message: "Product service is authenticated!",
-    userId: req.userId,
   });
 });
 
