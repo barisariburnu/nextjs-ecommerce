@@ -1,11 +1,15 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { clerkMiddleware, getAuth } from "@clerk/express";
 import { shouldBeUser } from "../middleware/authMiddleware.js";
 
+import categoryRouter from "./routes/category.route.js";
+import productRouter from "./routes/product.route.js";
+
 const app = express();
 const port = 8000;
 
+app.use(express.json());
 app.use(clerkMiddleware());
 
 app.use(
@@ -28,6 +32,16 @@ app.get("/test", shouldBeUser, (req: Request, res: Response) => {
     message: "Product service is authenticated!",
     userId: req.userId,
   });
+});
+
+app.use("/products", productRouter);
+app.use("/categories", categoryRouter);
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err);
+  res
+    .status(err.status || 500)
+    .json({ message: err.message || "Internal server error" });
 });
 
 app.listen(port, () => {
