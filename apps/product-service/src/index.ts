@@ -5,6 +5,7 @@ import { shouldBeUser } from "./middleware/authMiddleware.js";
 
 import categoryRouter from "./routes/category.route.js";
 import productRouter from "./routes/product.route.js";
+import { consumer, producer } from "./utils/kafka.js";
 
 const app = express();
 const port = 8000;
@@ -37,6 +38,16 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     .json({ message: err.message || "Internal server error" });
 });
 
-app.listen(port, () => {
-  console.log(`Product service is running on port ${port}`);
-});
+const start = async () => {
+  try {
+    await Promise.all([producer.connect(), consumer.connect()]);
+    app.listen(port, () => {
+      console.log(`Product service is running on port ${port}`);
+    });
+  } catch (error) {
+    console.error("Failed to connect to Kafka:", error);
+    process.exit(1);
+  }
+};
+
+start();

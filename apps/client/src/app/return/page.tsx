@@ -24,3 +24,5 @@ const ReturnPage = async ({
     </div>
   );
 };
+
+export default ReturnPage;

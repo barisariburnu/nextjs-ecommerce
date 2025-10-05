@@ -3,6 +3,9 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import sessionRoute from "./routes/session.route.js";
 import { cors } from "hono/cors";
+import webhookRoute from "./routes/webhooks.route.js";
+import { consumer, producer } from "./utils/kafka.js";
+import { runKafkaSubscriptions } from "./utils/subscriptions.js";
 
 const app = new Hono();
 const port = 8002;
@@ -24,9 +27,12 @@ app.get("/health", (c) => {
 });
 
 app.route("/session", sessionRoute);
+app.route("/webhooks", webhookRoute);
 
 const start = async () => {
   try {
+    await Promise.all([producer.connect(), consumer.connect()]);
+    await runKafkaSubscriptions();
     await serve(
       {
         fetch: app.fetch,
