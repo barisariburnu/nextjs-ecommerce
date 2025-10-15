@@ -1,8 +1,8 @@
-import { auth } from "@clerk/nextjs/server";
+import { useAuth } from "@clerk/nextjs";
 import { OrderType } from "@repo/types";
 
 const fetchOrders = async () => {
-  const { getToken } = await auth();
+  const { getToken } = useAuth();
   const token = await getToken();
 
   const res = await fetch(

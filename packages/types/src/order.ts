@@ -18,3 +18,9 @@ export type OrderMessageType = {
   status: (typeof OrderStatus)[number];
   products: OrderProductItemType[];
 };
+
+export type OrderChartType = {
+  month: string;
+  total: number;
+  successful: number;
+};

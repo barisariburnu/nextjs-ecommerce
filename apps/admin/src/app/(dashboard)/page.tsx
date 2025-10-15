@@ -3,12 +3,22 @@ import AppBarChart from "@/components/AppBarChart";
 import AppPieChart from "@/components/AppPieChart";
 import CardList from "@/components/CardList";
 import TodoList from "@/components/TodoList";
+import { useAuth } from "@clerk/nextjs";
 
-const Homepage = () => {
+const Homepage = async () => {
+  const { getToken } = useAuth();
+  const orderChartData = await fetch(
+    `${process.env.NEXT_PUBLIC_ORDER_SERVICE_URL}/order-chart`,
+    {
+      headers: {
+        Authorization: `Bearer ${await getToken()}`,
+      },
+    }
+  ).then((res) => res.json());
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-4">
       <div className="bg-primary-foreground p-4 rounded-lg lg:col-span-2 xl:col-span-1 2xl:col-span-2">
-        <AppBarChart />
+        <AppBarChart dataPromise={orderChartData} />
       </div>
       <div className="bg-primary-foreground p-4 rounded-lg">
         <CardList title="Latest Transactions" />
@@ -16,7 +26,9 @@ const Homepage = () => {
       <div className="bg-primary-foreground p-4 rounded-lg">
         <AppPieChart />
       </div>
-      <div className="bg-primary-foreground p-4 rounded-lg"><TodoList/></div>
+      <div className="bg-primary-foreground p-4 rounded-lg">
+        <TodoList />
+      </div>
       <div className="bg-primary-foreground p-4 rounded-lg lg:col-span-2 xl:col-span-1 2xl:col-span-2">
         <AppAreaChart />
       </div>

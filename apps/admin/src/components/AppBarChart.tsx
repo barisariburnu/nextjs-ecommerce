@@ -1,5 +1,14 @@
 "use client";
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { OrderChartType } from "@repo/types";
+import { use } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 const chartConfig = {
@@ -22,7 +31,12 @@ const chartData = [
   { month: "June", total: 214, successful: 140 },
 ];
 
-const AppBarChart = () => {
+const AppBarChart = async ({
+  dataPromise,
+}: {
+  dataPromise: Promise<OrderChartType[]>;
+}) => {
+  const chartData = use(dataPromise);
   return (
     <div className="">
       <h1 className="text-lg font-medium mb-6">Total Revenue</h1>
@@ -36,11 +50,7 @@ const AppBarChart = () => {
             axisLine={false}
             tickFormatter={(value) => value.slice(0, 3)}
           />
-          <YAxis
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-          />
+          <YAxis tickLine={false} tickMargin={10} axisLine={false} />
           <ChartTooltip content={<ChartTooltipContent />} />
           <ChartLegend content={<ChartLegendContent />} />
           <Bar dataKey="total" fill="var(--color-total)" radius={4} />

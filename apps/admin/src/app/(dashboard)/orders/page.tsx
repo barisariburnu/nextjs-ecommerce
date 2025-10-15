@@ -1,11 +1,11 @@
-import { auth } from "@clerk/nextjs/server";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { OrderType } from "@repo/types";
+import { useAuth } from "@clerk/nextjs";
 
 const getData = async (): Promise<OrderType[]> => {
   try {
-    const { getToken } = await auth();
+    const { getToken } = useAuth();
     const token = await getToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_ORDER_SERVICE_URL}/orders`,

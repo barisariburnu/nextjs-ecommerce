@@ -1,9 +1,10 @@
-import { auth, type User } from "@clerk/nextjs/server";
+import { type User } from "@clerk/nextjs/server";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import { useAuth } from "@clerk/nextjs";
 
 const getData = async (): Promise<{ data: User[]; totalCount: number }> => {
-  const { getToken } = await auth();
+  const { getToken } = useAuth();
   const token = await getToken();
   try {
     const res = await fetch(
