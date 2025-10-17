@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { clerkClient } from "@clerk/express";
+import { producer } from "../utils/kafka";
 
 const router: Router = Router();
 
@@ -24,6 +25,12 @@ router.post("/", async (req: Request, res: Response) => {
   type CreateParams = Parameters<typeof clerkClient.users.createUser>[0];
   const newUser: CreateParams = req.body;
   const user = await clerkClient.users.createUser(newUser);
+  await producer.send("user-created", {
+    value: {
+      username: user.username,
+      email: user.emailAddresses[0]?.emailAddress,
+    },
+  });
   res.status(201).json({
     status: "success",
     data: user,

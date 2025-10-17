@@ -12,19 +12,25 @@ export const createConsumer = (kafka: Kafka, groupId: string) => {
   };
 
   const subscribe = async <T>(
-    topic: string,
-    handler: (message: KafkaMessage<T>) => Promise<void>
+    topics: {
+      topicName: string;
+      topicHandler: (message: KafkaMessage<T>) => Promise<void>;
+    }[]
   ) => {
     await consumer.subscribe({
-      topic,
+      topics: topics.map((topic) => topic.topicName),
       fromBeginning: true,
     });
     await consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
         try {
-          const value = message.value?.toString();
-          if (value) {
-            await handler(JSON.parse(value));
+          const topicConfig = topics.find((t) => t.topicName === topic);
+          if (topicConfig) {
+            const value = message.value?.toString();
+
+            if (value) {
+              await topicConfig.topicHandler(JSON.parse(value));
+            }
           }
         } catch (error) {
           console.error("Error processing message:", error);
